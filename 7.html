@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Text Effect</title>
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .three-d-text {
+            font-size: 3em;
+            font-weight: bold;
+            color: #3498db;
+            text-shadow: 4px 4px 0 #2980b9, 7px 7px 0 #2c3e50;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .three-d-text:hover {
+            transform: translate(3px, 3px);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="three-d-text">Hover me!</div>
+
+</body>
+
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2D Transformation Example</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        img {
+            transform-origin: center center;
+            transition: transform 0.5s ease-in-out;
+        }
+    </style>
+</head>
+
+<body>
+
+    <img id="transformImage" src="https://picsum.photos/200" alt="Transformed Image" width="200">
+
+    <script>
+        const transformImage = document.getElementById('transformImage');
+
+        // Apply combined transformations after 1 second
+        setTimeout(() => {
+            transformImage.style.transform = 'rotate(45deg) scale(1.5) translate(50px, 50px)';
+        }, 1000);
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+        }
+
+        main {
+            display: flex;
+            flex: 1;
+        }
+
+        nav {
+            width: 200px;
+            background-color: #f0f0f0;
+            padding: 10px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        nav a {
+            display: block;
+            margin-bottom: 10px;
+            text-decoration: none;
+            color: #333;
+        }
+
+        article {
+            flex: 1;
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Company Name</h1>
+    </header>
+    <main>
+        <nav>
+            <a href="#" onclick="showDepartment('department1'); return false;">Department 1</a>
+            <a href="#" onclick="showDepartment('department2'); return false;">Department 2</a>
+            <a href="#" onclick="showDepartment('department3'); return false;">Department 3</a>
+            <!-- Add more departments as needed -->
+        </nav>
+        <article id="department-info">
+            <!-- Department information will be displayed here -->
+        </article>
+    </main>
+    <script>
+        function showDepartment(department) {
+            // You can replace the following line with an AJAX request to fetch department information from the server
+            const departmentInfo = getDepartmentInfo(department);
+            // Display department information in the third frame (article)
+            document.getElementById('department-info').innerHTML = departmentInfo;
+        }
+
+        function getDepartmentInfo(department) {
+            // Simulated department information, replace this with actual data
+            const departmentData = {
+                department1: 'Information for Department 1',
+                department2: 'Information for Department 2',
+                department3: 'Information for Department 3',
+                // Add more departments as needed
+            };
+            return departmentData[department] || 'Department information not available.';
+        }
+    </script>
+</body>
+
+</html>

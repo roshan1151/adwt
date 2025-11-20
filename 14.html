@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Plan Booking Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        form {
+            max-width: 400px;
+            margin: auto;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+        }
+        input[type="checkbox"] {
+            width: auto;
+            margin-right: 5px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button[type="reset"] {
+            background-color: #f44336;
+        }
+    </style>
+</head>
+<body>
+
+    <form id="travelForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="address">Address:</label>
+        <input type="text" id="address" name="address" required>
+
+        <label for="contact">Contact No.:</label>
+        <input type="tel" id="contact" name="contact" required>
+
+        <label>Gender:</label>
+        
+        <label for="male">Male</label>
+        <input type="radio" id="male" name="gender" value="male" required>
+        <label for="female">Female</label>
+        <input type="radio" id="female" name="gender" value="female" required>
+
+        <label for="season">Preferred Season:</label>
+        <label for="spring">Spring</label>
+        <input type="checkbox" id="spring" name="season" value="spring">
+        <label for="summer">Summer</label>
+        <input type="checkbox" id="summer" name="season" value="summer">
+        <label for="autumn">Autumn</label>
+        <input type="checkbox" id="autumn" name="season" value="autumn">
+        <label for="winter">Winter</label>
+        <input type="checkbox" id="winter" name="season" value="winter">
+
+        <label for="locationType">Location Type:</label>
+        <select id="locationType" name="locationType" required>
+            <option value="" disabled selected>Select Location Type</option>
+            <option value="beach">Beach</option>
+            <option value="mountain">Mountain</option>
+            <option value="city">City</option>
+            <option value="countryside">Countryside</option>
+        </select>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <button type="submit">Submit</button>
+            <button type="reset">Reset</button>
+        </div>
+    </form>
+
+    <script>
+        document.getElementById('travelForm').addEventListener('submit', function (e) {
+            e.preventDefault(); // Prevent the default form submission
+            // You can add code here to handle the form submission, e.g., sending data to a server
+        });
+    </script>
+
+</body>
+</html>
