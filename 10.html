@@ -43,3 +43,62 @@
 </body>
 
 </html>
+
+
+2. Collections With 5 Documents Each
+db.customers.insertMany([
+ { _id: "C1", name: "Rohan Patil", city: "Pune", mobile: "9990011111" },
+ { _id: "C2", name: "Sneha Joshi", city: "Mumbai", mobile: "8880022222" },
+ { _id: "C3", name: "Aditi Deshmukh", city: "Nashik", mobile: "7770033333" },
+ { _id: "C4", name: "Milind Shinde", city: "Pimpri", mobile: "6660044444" },
+ { _id: "C5", name: "Diksha Gawande", city: "Pune", mobile: "5550055555" }
+]);
+
+db.products.insertMany([
+ { _id: "P1", name: "Laptop", brand: "Dell", warranty: "1 year", product_rating: 4.5, brand_rating: 4.6 },
+ { _id: "P2", name: "Smartphone", brand: "Samsung", warranty: "2 years", product_rating: 4.7, brand_rating: 4.8 },
+ { _id: "P3", name: "Smartwatch", brand: "Apple", warranty: "1 year", product_rating: 4.9, brand_rating: 4.8 },
+ { _id: "P4", name: "Headphones", brand: "Boat", warranty: "6 months", product_rating: 4.0, brand_rating: 4.2 },
+ { _id: "P5", name: "Refrigerator", brand: "LG", warranty: "1 year", product_rating: 4.3, brand_rating: 4.5 }
+]);
+
+db.purchases.insertMany([
+ { pur_id: "PU1", customer_id: "C1", product_id: "P1", billamt: 65000, date: "15/08/2023" },
+ { pur_id: "PU2", customer_id: "C2", product_id: "P3", billamt: 120000, date: "10/08/2023" },
+ { pur_id: "PU3", customer_id: "C3", product_id: "P5", billamt: 45000, date: "15/08/2023" },
+ { pur_id: "PU4", customer_id: "C4", product_id: "P2", billamt: 80000, date: "20/08/2023" },
+ { pur_id: "PU5", customer_id: "C5", product_id: "P4", billamt: 3000,  date: "15/08/2023" }
+]);
+
+
+a. List the names of products whose warranty period is one year
+db.products.find(
+   { warranty: "1 year" },
+   { name: 1, _id: 0 }
+);
+
+b. List customers who have done purchase on “15/08/2023”
+var pur = db.purchases.find({ date: "15/08/2023" }).toArray();
+var custIds = pur.map(p => p.customer_id);
+
+db.customers.find(
+   { _id: { $in: custIds } },
+   { name: 1, _id: 0 }
+);
+
+c.
+var maxBrand = db.products.find().sort({ brand_rating: -1 }).limit(1).toArray()[0];
+
+db.products.findOne(
+   { brand_rating: maxBrand.brand_rating },
+   { name: 1, brand: 1, brand_rating: 1, _id: 0 }
+);
+
+d.
+var pur = db.purchases.find({ billamt: { $gt: 50000 } }).toArray();
+var custIds = pur.map(p => p.customer_id);
+
+db.customers.find(
+   { _id: { $in: custIds }, city: "Pune" },
+   { name: 1, city: 1, _id: 0 }
+);
