@@ -48,3 +48,106 @@
 </body>
 
 </html>
+
+
+1. Data Model as a Document Database
+1. cities
+{
+  _id: "C1",
+  name: "Nashik",
+  state: "Maharashtra"
+}
+
+2. publishers
+{
+  _id: "P1",
+  name: "Lokmat Group",
+  state: "Maharashtra"
+}
+3. newspapers
+{
+  _id: "N1",
+  title: "Lokmat Nashik",
+  language: "Marathi",
+  publisher_id: "P1",
+  city_id: "C1",
+    daily_sale: 54000
+}
+
+2. Collections + Sample Documents (5 each)
+db.cities.insertMany([
+ { _id: "C1", name: "Nashik", state: "Maharashtra" },
+ { _id: "C2", name: "Mumbai", state: "Maharashtra" },
+ { _id: "C3", name: "Pune", state: "Maharashtra" },
+ { _id: "C4", name: "Ahmedabad", state: "Gujarat" },
+ { _id: "C5", name: "Surat", state: "Gujarat" }
+]);
+
+db.publishers.insertMany([
+ { _id: "P1", name: "Lokmat Group", state: "Maharashtra" },
+ { _id: "P2", name: "Times Group", state: "Maharashtra" },
+ { _id: "P3", name: "Sandesh Group", state: "Gujarat" },
+ { _id: "P4", name: "Divya Bhaskar Media", state: "Gujarat" },
+ { _id: "P5", name: "Sakal Publications", state: "Maharashtra" }
+]);
+
+db.newspapers.insertMany([
+ {
+   _id: "N1",
+   title: "Lokmat Nashik",
+   language: "Marathi",
+   publisher_id: "P1",
+   city_id: "C1",
+   daily_sale: 54000
+ },
+ {
+   _id: "N2",
+   title: "Sakal Pune",
+   language: "Marathi",
+   publisher_id: "P5",
+   city_id: "C3",
+   daily_sale: 62000
+ },
+ {
+   _id: "N3",
+   title: "Divya Bhaskar Ahmedabad",
+   language: "Gujarati",
+   publisher_id: "P4",
+   city_id: "C4",
+   daily_sale: 78000
+ },
+ {
+   _id: "N4",
+   title: "Sandesh Surat",
+   language: "Gujarati",
+   publisher_id: "P3",
+   city_id: "C5",
+   daily_sale: 71000
+ },
+ {
+   _id: "N5",
+   title: "Maharashtra Times Mumbai",
+   language: "Marathi",
+   publisher_id: "P2",
+   city_id: "C2",
+   daily_sale: 68000
+ }
+]);
+
+a. List all newspapers available in “NASHIK” city
+var city = db.cities.findOne({ name: "Nashik" });
+db.newspapers.find({ city_id: city._id });
+
+b. List all Marathi-language newspapers
+db.newspapers.find({ language: "Marathi" });
+
+c. Count number of publishers in “Gujrat” state
+db.publishers.countDocuments({ state: "Gujarat" });
+
+d. Cursor to show newspapers with highest sale in Maharashtra state
+var mhCities = db.cities.find({ state: "Maharashtra" }).toArray().map(c => c._id);
+var cursor = db.newspapers.find({ city_id: { $in: mhCities } })
+                         .sort({ daily_sale: -1 })
+                         .limit(1);
+
+cursor.forEach(printjson);

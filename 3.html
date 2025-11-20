@@ -54,3 +54,83 @@
 </body>
 
 </html>
+
+
+1. Data Model (Document Database)
+1. departments
+{
+  _id: "D1",
+  name: "Sales",
+  location: "Mumbai"
+}
+
+2. employees
+{
+  _id: "E1",
+  name: "Rohan Patil",
+  salary: 62000,
+  position: "Executive",
+  dept_id: "D1"
+}
+
+
+2. Collections + Insert at least 5 documents
+db.departments.insertMany([
+  { _id: "D1", name: "Sales", location: "Mumbai" },
+  { _id: "D2", name: "HR", location: "Pune" },
+  { _id: "D3", name: "Finance", location: "Mumbai" },
+  { _id: "D4", name: "IT", location: "Bangalore" },
+  { _id: "D5", name: "Marketing", location: "Delhi" }
+]);
+
+db.employees.insertMany([
+  { _id: "E1", name: "Rohan Patil", salary: 62000, position: "Sales Executive",  dept_id: "D1" },
+  { _id: "E2", name: "Neha Kulkarni", salary: 45000, position: "HR Assistant",    dept_id: "D2" },
+  { _id: "E3", name: "Amit Shah",     salary: 80000, position: "Finance Manager", dept_id: "D3" },
+  { _id: "E4", name: "Sneha Goyal",   salary: 95000, position: "IT Lead",         dept_id: "D4" },
+  { _id: "E5", name: "Ravi Jain",     salary: 55000, position: "Sales Manager",   dept_id: "D1" },
+  { _id: "E6", name: "Meera Joshi",   salary: 30000, position: "Marketing Exec",  dept_id: "D5" }
+]);
+
+
+a. Display name of the employee who has highest salary
+db.employees.find().sort({ salary: -1 }).limit(1);
+
+b. Display the biggest department (max number of employees)
+db.employees.aggregate([
+  {
+    $group: {
+      _id: "$dept_id",
+      empCount: { $sum: 1 }
+    }
+  },
+  { $sort: { empCount: -1 } },
+  { $limit: 1 },
+  {
+    $lookup: {
+      from: "departments",
+      localField: "_id",
+      foreignField: "_id",
+      as: "department"
+    }
+  }
+]);
+
+c. Cursor to show department-wise employee information
+var cursor = db.departments.find();
+
+cursor.forEach(function(dept) {
+   print("Department:", dept.name);
+   db.employees.find({ dept_id: dept._id }).forEach(printjson);
+   print("-------------");
+});
+
+
+
+
+
+
+
+
+
+

@@ -84,3 +84,49 @@
 </body>
 
 </html>
+
+
+2. Insert At Least 5 Documents in Each Collection
+db.products.insertMany([
+ { _id: "P1", name: "Laptop", price: 55000, stock: 20 },
+ { _id: "P2", name: "Smartphone", price: 25000, stock: 35 },
+ { _id: "P3", name: "Printer", price: 15000, stock: 10 },
+ { _id: "P4", name: "Tablet", price: 18000, stock: 15 },
+ { _id: "P5", name: "Monitor", price: 12000, stock: 25 }
+]);
+
+db.customers.insertMany([
+ { _id: "C1", name: "Mr. Rajiv", city: "Pune", mobile: "9990011111" },
+ { _id: "C2", name: "Rohan Patil", city: "Nashik", mobile: "8880022222" },
+ { _id: "C3", name: "Sneha Joshi", city: "Mumbai", mobile: "7770033333" },
+ { _id: "C4", name: "Milind Shinde", city: "Pimpri", mobile: "6660044444" },
+ { _id: "C5", name: "Pooja Kulkarni", city: "Pune", mobile: "5550055555" }
+]);
+
+db.orders.insertMany([
+ { order_id: "O1", customer_id: "C1", product_id: "P1", qty: 1, total: 55000, order_date: "12/08/2023" },
+ { order_id: "O2", customer_id: "C3", product_id: "P3", qty: 2, total: 30000, order_date: "18/08/2023" },
+ { order_id: "O3", customer_id: "C2", product_id: "P4", qty: 1, total: 18000, order_date: "20/08/2023" },
+ { order_id: "O4", customer_id: "C1", product_id: "P5", qty: 3, total: 36000, order_date: "21/08/2023" },
+ { order_id: "O5", customer_id: "C4", product_id: "P2", qty: 1, total: 25000, order_date: "22/08/2023" }
+]);
+
+db.invoices.insertMany([
+ { invoice_id: "I1", order_id: "O1", invoice_date: "13/08/2023", amount: 55000 },
+ { invoice_id: "I2", order_id: "O2", invoice_date: "19/08/2023", amount: 30000 },
+ { invoice_id: "I3", order_id: "O4", invoice_date: "22/08/2023", amount: 36000 },
+ { invoice_id: "I4", order_id: "O5", invoice_date: "23/08/2023", amount: 25000 }
+]);
+
+
+a. List all products in the inventory
+db.products.find({});
+
+b. List the details of orders with value > 20000
+db.orders.find({ total: { $gt: 20000 } });
+
+c. List all the orders which have NOT been processed (invoice not generated)
+var inv = db.invoices.find().toArray();
+var processed = inv.map(i => i.order_id);
+
+db.orders.find({ order_id: { $nin: processed } });

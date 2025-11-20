@@ -87,3 +87,57 @@
     </script>
 </body> 
 </html>
+
+2. Create Nodes & Relationships (Sample Data)
+Create Vehicle Types
+CREATE (:VehicleType {type_id:1, name:"Two-Wheeler", fuel:"Petrol", engine_cc:150, capacity:2});
+CREATE (:VehicleType {type_id:2, name:"Four-Wheeler", fuel:"Diesel", engine_cc:1500, capacity:5});
+CREATE (:VehicleType {type_id:3, name:"Electric Scooter", fuel:"Electric", engine_cc:0, capacity:2});
+
+Create Customers
+CREATE (:Customer {cust_id:101, name:"Suresh", city:"Pune"});
+CREATE (:Customer {cust_id:102, name:"Meera", city:"Nashik"});
+CREATE (:Customer {cust_id:103, name:"Ravi", city:"Mumbai"});
+CREATE (:Customer {cust_id:104, name:"Sana", city:"Pune"});
+
+Create Buying Relationships
+MATCH (c:Customer {name:"Suresh"}), (v:VehicleType {name:"Two-Wheeler"})
+CREATE (c)-[:BOUGHT]->(v);
+MATCH (c:Customer {name:"Meera"}), (v:VehicleType {name:"Four-Wheeler"})
+CREATE (c)-[:BOUGHT]->(v);
+MATCH (c:Customer {name:"Ravi"}), (v1:VehicleType {name:"Two-Wheeler"}), (v2:VehicleType {name:"Four-Wheeler"})
+CREATE (c)-[:BOUGHT]->(v1),
+       (c)-[:BOUGHT]->(v2);
+MATCH (c:Customer {name:"Sana"}), (v:VehicleType {name:"Electric Scooter"})
+CREATE (c)-[:BOUGHT]->(v);
+
+Create Rating / Recommendation
+MATCH (c:Customer {name:"Suresh"}), (v:VehicleType {name:"Two-Wheeler"})
+CREATE (c)-[:RATES {stars:4}]->(v);
+MATCH (c:Customer {name:"Meera"}), (v:VehicleType {name:"Four-Wheeler"})
+CREATE (c)-[:RATES {stars:5}]->(v);
+MATCH (c:Customer {name:"Ravi"}), (v:VehicleType {name:"Two-Wheeler"})
+CREATE (c)-[:RECOMMENDS]->(v);
+MATCH (c:Customer {name:"Sana"}), (v:VehicleType {name:"Electric Scooter"})
+CREATE (c)-[:RATES {stars:3}]->(v);
+
+a. List the characteristics of four-wheeler types
+MATCH (v:VehicleType {name:"Four-Wheeler"})
+RETURN v.name, v.fuel, v.engine_cc, v.capacity;
+
+b. List the names of customers who bought a two-wheeler vehicle
+MATCH (c:Customer)-[:BOUGHT]->(v:VehicleType {name:"Two-Wheeler"})
+RETURN c.name;
+
+c. List the customers who bought more than one type of vehicle
+MATCH (c:Customer)-[:BOUGHT]->(v:VehicleType)
+WITH c, COUNT(v) AS vehicleCount
+WHERE vehicleCount > 1
+RETURN c.name, vehicleCount;
+
+d. List the most recommended vehicle type
+MATCH (c:Customer)-[:RECOMMENDS]->(v:VehicleType)
+WITH v, COUNT(c) AS recCount
+RETURN v.name AS VehicleType, recCount
+ORDER BY recCount DESC
+LIMIT 1;

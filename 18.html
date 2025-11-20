@@ -37,3 +37,65 @@
 </body>
 
 </html>
+
+
+
+2. Create Nodes & Relationships (Cypher with Sample Data)
+CREATE (:Doctor {doctor_id:1, name:"Dr. Mehta", specialization:"Orthopedic", experience:12})
+CREATE (:Doctor {doctor_id:2, name:"Dr. Rahul Joshi", specialization:"Pediatrics", experience:8})
+CREATE (:Doctor {doctor_id:3, name:"Dr. Shalini", specialization:"Cardiologist", experience:15})
+CREATE (:Doctor {doctor_id:4, name:"Dr. Nisha", specialization:"Orthopedic", experience:10})
+CREATE (:Doctor {doctor_id:5, name:"Dr. Patil", specialization:"ENT", experience:7});
+
+Create Hospitals
+CREATE (:Hospital {hospital_id:101, name:"CityCare Hospital", area:"Kothrud"})
+CREATE (:Hospital {hospital_id:102, name:"Ruby Hall", area:"Camp"})
+CREATE (:Hospital {hospital_id:103, name:"Seren Health", area:"Seren"});
+
+Create Clinics
+CREATE (:Clinic {clinic_id:201, name:"Healing Touch Clinic", area:"Kothrud"})
+CREATE (:Clinic {clinic_id:202, name:"KidsCare Clinic", area:"Seren"});
+
+Create Persons
+CREATE (:Person {person_id:301, name:"Amit", age:32, city:"Pune"})
+CREATE (:Person {person_id:302, name:"Sneha", age:28, city:"Pune"})
+CREATE (:Person {person_id:303, name:"Rohit", age:36, city:"Pune"});
+
+Create Relationships
+
+Doctors Visiting Hospitals
+MATCH (d:Doctor {name:"Dr. Mehta"}), (h:Hospital {name:"CityCare Hospital"})
+CREATE (d)-[:VISITS]->(h);
+MATCH (d:Doctor {name:"Dr. Rahul Joshi"}), (h:Hospital {name:"Seren Health"})
+CREATE (d)-[:VISITS]->(h);
+
+Doctors Owning Clinics
+MATCH (d:Doctor {name:"Dr. Mehta"}), (c:Clinic {name:"Healing Touch Clinic"})
+CREATE (d)-[:OWNS]->(c);
+MATCH (d:Doctor {name:"Dr. Rahul Joshi"}), (c:Clinic {name:"KidsCare Clinic"})
+CREATE (d)-[:OWNS]->(c);
+
+Reviews and Recommendations
+MATCH (p:Person {name:"Amit"}), (d:Doctor {name:"Dr. Rahul Joshi"})
+CREATE (p)-[:REVIEWS {rating:5, comment:"Excellent for kids", date:"2023-02-01"}]->(d);
+MATCH (p:Person {name:"Sneha"}), (d:Doctor {name:"Dr. Mehta"})
+CREATE (p)-[:RECOMMENDS]->(d);
+MATCH (p:Person {name:"Rohit"}), (d:Doctor {name:"Dr. Rahul Joshi"})
+CREATE (p)-[:RECOMMENDS]->(d);
+
+a. List the Orthopedic doctors in a given area
+Example Area: Kothrud
+MATCH (d:Doctor {specialization:"Orthopedic"})-[:VISITS]->(h:Hospital {area:"Kothrud"})
+RETURN d.name AS Orthopedic_Doctors, h.name AS Hospital;
+
+b. List the doctors who have specialization in _____
+Example Specialization: Pediatrics
+MATCH (d:Doctor {specialization:"Pediatrics"})
+RETURN d.name AS Pediatric_Doctors;
+
+c. List the most recommended Pediatrics in Seren area
+MATCH (d:Doctor {specialization:"Pediatrics"})-[:VISITS]->(h:Hospital {area:"Seren"})
+MATCH (p:Person)-[:RECOMMENDS]->(d)
+RETURN d.name AS Doctor, COUNT(p) AS Total_Recommendations
+ORDER BY Total_Recommendations DESC
+LIMIT 1;

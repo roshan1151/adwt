@@ -38,3 +38,74 @@
 </body>
 
 </html>
+
+
+
+2. Collections With 5 Documents Each
+db.customers.insertMany([
+ { _id: "C1", first_name: "Sunil", last_name: "Patil", mobile: "9876543210" },
+ { _id: "C2", first_name: "Sneha", last_name: "Joshi", mobile: "9876501234" },
+ { _id: "C3", first_name: "Ramesh", last_name: "Kulkarni", mobile: "8876508765" },
+ { _id: "C4", first_name: "Sara", last_name: "Shaikh", mobile: "9765412345" },
+ { _id: "C5", first_name: "Amit", last_name: "Desai", mobile: "9876512345" }
+]);
+
+db.branches.insertMany([
+ { _id: "B1", name: "Nashik Road", city: "Nashik" },
+ { _id: "B2", name: "College Road", city: "Nashik" },
+ { _id: "B3", name: "Pune Camp", city: "Pune" },
+ { _id: "B4", name: "Thane West", city: "Mumbai" },
+ { _id: "B5", name: "MG Road", city: "Pune" }
+]);
+
+db.accounts.insertMany([
+ { acc_no: "A1", customer_id: "C1", branch_id: "B1", acc_type: "Saving",  open_date: "2020-01-01" },
+ { acc_no: "A2", customer_id: "C2", branch_id: "B2", acc_type: "Current", open_date: "2020-01-01" },
+ { acc_no: "A3", customer_id: "C3", branch_id: "B3", acc_type: "Saving",  open_date: "2019-12-05" },
+ { acc_no: "A4", customer_id: "C4", branch_id: "B1", acc_type: "Loan",    open_date: "2021-03-10" },
+ { acc_no: "A5", customer_id: "C5", branch_id: "B1", acc_type: "Loan",    open_date: "2020-11-01" }
+]);
+
+db.transactions.insertMany([
+ { _id: "T1", acc_no: "A1", trans_type: "Deposit",  amount: 5000, date: "2020-02-01" },
+ { _id: "T2", acc_no: "A1", trans_type: "Withdraw", amount: 2000, date: "2020-03-01" },
+ { _id: "T3", acc_no: "A2", trans_type: "Deposit",  amount: 3000, date: "2020-01-10" },
+ { _id: "T4", acc_no: "A3", trans_type: "Deposit",  amount: 10000, date: "2020-04-15" },
+ { _id: "T5", acc_no: "A4", trans_type: "Loan EMI", amount: 1500, date: "2021-04-01" }
+]);
+
+a. List names of all customers whose first name starts with “S”
+db.customers.find(
+   { first_name: /^S/ },
+   { first_name: 1, last_name: 1, _id: 0 }
+);
+
+b. List all customers who opened an account on 1/1/2020 in a specific branch (example: B1)
+db.accounts.find(
+   { open_date: "2020-01-01", branch_id: "B1" }
+);
+
+var acc = db.accounts.find({ open_date: "2020-01-01", branch_id: "B1" }).toArray();
+var custIdList = acc.map(a => a.customer_id);
+
+db.customers.find(
+   { _id: { $in: custIdList } },
+   { first_name: 1, last_name: 1, _id: 0 }
+);
+
+c. List names of all customers where acc_type = “Saving”
+
+var sav = db.accounts.find({ acc_type: "Saving" }).toArray();
+var ids = sav.map(s => s.customer_id);
+
+
+db.customers.find(
+   { _id: { $in: ids } },
+   { first_name: 1, last_name: 1, _id: 0 }
+);
+
+d. Count total number of loan account holders of a particular branch (example: B1)
+db.accounts.countDocuments({
+   branch_id: "B1",
+   acc_type: "Loan"
+});

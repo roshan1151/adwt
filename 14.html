@@ -93,3 +93,69 @@
 
 </body>
 </html>
+
+
+2. Create Sample Nodes & Relationships (Cypher)
+CREATE 
+(s1:Student {student_id:'S1', name:'Amit', category:'OBC', income:150000, year_of_study:'FY', city:'Pune'}),
+(s2:Student {student_id:'S2', name:'Riya', category:'SC', income:180000, year_of_study:'SY', city:'Mumbai'}),
+(s3:Student {student_id:'S3', name:'Sachin', category:'OBC', income:220000, year_of_study:'TY', city:'Nashik'}),
+(s4:Student {student_id:'S4', name:'Pooja', category:'NT', income:100000, year_of_study:'FY', city:'Pune'}),
+(s5:Student {student_id:'S5', name:'Rohit', category:'General', income:500000, year_of_study:'SY', city:'Nagpur'});
+
+CREATE
+(sc1:Scholarship {scholarship_id:'SC1', name:'OBC Merit Scholarship', category_eligible:'OBC', income_limit:300000, year:'2020-2021', benefit_amount:15000}),
+(sc2:Scholarship {scholarship_id:'SC2', name:'SC Excellence Scholarship', category_eligible:'SC', income_limit:350000, year:'2020-2021', benefit_amount:18000}),
+(sc3:Scholarship {scholarship_id:'SC3', name:'Minority Scholarship', category_eligible:'Minority', income_limit:250000, year:'2020-2021', benefit_amount:12000}),
+(sc4:Scholarship {scholarship_id:'SC4', name:'Open Category Scholarship', category_eligible:'General', income_limit:600000, year:'2020-2021', benefit_amount:10000});
+
+// Applications
+MATCH (s1:Student {student_id:'S1'}),(sc1:Scholarship {scholarship_id:'SC1'})
+CREATE (s1)-[:APPLIED_FOR {apply_date:'2020-06-10', status:'approved'}]->(sc1);
+
+MATCH (s2),(sc2)
+CREATE (s2)-[:APPLIED_FOR {apply_date:'2020-06-11', status:'approved'}]->(sc2);
+
+MATCH (s3),(sc1)
+CREATE (s3)-[:APPLIED_FOR {apply_date:'2020-06-12', status:'approved'}]->(sc1);
+
+// Benefits
+MATCH (s1),(sc1)
+CREATE (s1)-[:BENEFITTED_FROM {year:'2020-2021', amount_received:15000}]->(sc1);
+
+MATCH (s2),(sc2)
+CREATE (s2)-[:BENEFITTED_FROM {year:'2020-2021', amount_received:18000}]->(sc2);
+
+// Recommendations
+MATCH (s1),(s3)
+CREATE (s1)-[:RECOMMENDS {relation:'friend', date:'2020-05-01'}]->(s3);
+
+MATCH (s2),(s1)
+CREATE (s2)-[:RECOMMENDS {relation:'cousin', date:'2020-05-02'}]->(s1);
+
+
+a. List the names of scholarships for OBC category.
+MATCH (s:Scholarship)
+WHERE s.category_eligible = 'OBC'
+RETURN s.name AS OBC_Scholarships;
+
+b. Count number of students benefitted by ____ scholarship in year 2020-2021
+
+MATCH (st:Student)-[b:BENEFITTED_FROM]->(sc:Scholarship)
+WHERE sc.name = 'OBC Merit Scholarship'
+  AND b.year = '2020-2021'
+RETURN COUNT(st) AS Benefitted_Students;
+
+c. Update the income limit for a given scholarship
+
+MATCH (s:Scholarship {name:'OBC Merit Scholarship'})
+SET s.income_limit = 400000
+RETURN s;
+
+d. List the most popular scholarship
+
+MATCH (st:Student)-[:BENEFITTED_FROM]->(sc:Scholarship)
+WITH sc, COUNT(st) AS cnt
+RETURN sc.name AS Scholarship, cnt
+ORDER BY cnt DESC
+LIMIT 1;

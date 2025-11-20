@@ -63,3 +63,48 @@
 </body>
 
 </html>
+
+
+2. Insert at least 5 Documents
+db.movies.insertMany([
+  { movie_id: "M1", title: "DDLJ", year: 1995, business: 120, awards: 10, actors: ["A1","A2"] },
+  { movie_id: "M2", title: "Chennai Express", year: 2013, business: 300, awards: 5, actors: ["A1","A4"] },
+  { movie_id: "M3", title: "3 Idiots", year: 2009, business: 460, awards: 18, actors: ["A3"] },
+  { movie_id: "M4", title: "Dangal", year: 2016, business: 520, awards: 20, actors: ["A3"] },
+  { movie_id: "M5", title: "Pathaan", year: 2023, business: 1000, awards: 8, actors: ["A1","A4"] }
+]);
+
+db.actors.insertMany([
+  { actor_id: "A1", name: "Shahrukh Khan", age: 58, gender: "Male", movies: ["M1","M2","M5"] },
+  { actor_id: "A2", name: "Kajol", age: 49, gender: "Female", movies: ["M1"] },
+  { actor_id: "A3", name: "Aamir Khan", age: 59, gender: "Male", movies: ["M3","M4"] },
+  { actor_id: "A4", name: "Deepika Padukone", age: 38, gender: "Female", movies: ["M2","M5"] },
+  { actor_id: "A5", name: "Salman Khan", age: 58, gender: "Male", movies: [] }
+]);
+
+a. Find the movie which made the highest business
+db.movies.find().sort({ business: -1 }).limit(1);
+
+b. Display details of movies along with actors (JOIN using $lookup)
+db.movies.aggregate([
+  {
+    $lookup: {
+      from: "actors",
+      localField: "actors",
+      foreignField: "actor_id",
+      as: "actor_details"
+    }
+  }
+]);
+
+c. List all the movies of “Shahrukh Khan”
+db.actors.find(
+  { name: "Shahrukh Khan" },
+  { _id: 0, movies: 1 }
+);
+
+d. Display all movies having more than 2 awards
+db.movies.find(
+  { awards: { $gt: 2 } },
+  { title: 1, awards: 1, _id: 0 }
+);

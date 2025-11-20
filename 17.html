@@ -42,3 +42,85 @@
 </body>
 
 </html>
+
+
+2. Create Nodes & Relationships (Sample Graph)
+CREATE
+(a1:Author {auth_id:'A1', name:'R.K. Narayan'}),
+(a2:Author {auth_id:'A2', name:'Stan Lee'}),
+(a3:Author {auth_id:'A3', name:'Sudha Murthy'}),
+(a4:Author {auth_id:'A4', name:'David Williams'}),
+(a5:Author {auth_id:'A5', name:'John Hill'});
+
+CREATE
+(p1:Publisher {pub_id:'P1', name:'Sage', city:'Delhi'}),
+(p2:Publisher {pub_id:'P2', name:'Navneet', city:'Mumbai'}),
+(p3:Publisher {pub_id:'P3', name:'Nirali', city:'Pune'}),
+(p4:Publisher {pub_id:'P4', name:'Pearson', city:'Delhi'}),
+(p5:Publisher {pub_id:'P5', name:'Oxford Press', city:'UK'});
+
+CREATE
+(b1:Book {book_id:'B1', title:'Spiderman', category:'Comics', price:250}),
+(b2:Book {book_id:'B2', title:'Malgudi Days', category:'Novel', price:300}),
+(b3:Book {book_id:'B3', title:'Iron Man', category:'Comics', price:275}),
+(b4:Book {book_id:'B4', title:'Wise and Otherwise', category:'Story', price:200}),
+(b5:Book {book_id:'B5', title:'The Funny Life', category:'Comics', price:280});
+
+CREATE
+(r1:Reader {reader_id:'R1', name:'Samir', age:20}),
+(r2:Reader {reader_id:'R2', name:'Neha', age:22}),
+(r3:Reader {reader_id:'R3', name:'Sakshi', age:21}),
+(r4:Reader {reader_id:'R4', name:'Rahul', age:23}),
+(r5:Reader {reader_id:'R5', name:'Anil', age:24});
+
+Create Relationships
+Authors → Books
+MATCH (a2),(b1) CREATE (a2)-[:WROTE]->(b1);
+MATCH (a1),(b2) CREATE (a1)-[:WROTE]->(b2);
+MATCH (a2),(b3) CREATE (a2)-[:WROTE]->(b3);
+MATCH (a3),(b4) CREATE (a3)-[:WROTE]->(b4);
+MATCH (a4),(b5) CREATE (a4)-[:WROTE]->(b5);
+
+Publishers → Books
+MATCH (p1),(b1) CREATE (p1)-[:PUBLISHED]->(b1);
+MATCH (p2),(b2) CREATE (p2)-[:PUBLISHED]->(b2);
+MATCH (p1),(b3) CREATE (p1)-[:PUBLISHED]->(b3);
+MATCH (p3),(b4) CREATE (p3)-[:PUBLISHED]->(b4);
+MATCH (p3),(b5) CREATE (p3)-[:PUBLISHED]->(b5);
+
+Readers → Books (READ)
+MATCH (r1),(b1) CREATE (r1)-[:READ]->(b1);
+MATCH (r2),(b1) CREATE (r2)-[:READ]->(b1);
+MATCH (r3),(b3) CREATE (r3)-[:READ]->(b3);
+MATCH (r4),(b2) CREATE (r4)-[:READ]->(b2);
+MATCH (r5),(b1) CREATE (r5)-[:READ]->(b1);
+
+Ratings
+MATCH (r1),(b1) CREATE (r1)-[:RATED {stars:5}]->(b1);
+MATCH (r2),(b1) CREATE (r2)-[:RATED {stars:3}]->(b1);
+MATCH (r3),(b3) CREATE (r3)-[:RATED {stars:4}]->(b3);
+MATCH (r4),(b2) CREATE (r4)-[:RATED {stars:2}]->(b2);
+MATCH (r5),(b1) CREATE (r5)-[:RATED {stars:5}]->(b1);
+
+Recommendations
+MATCH (r1),(r3) CREATE (r1)-[:RECOMMENDS]->(r3);
+MATCH (r3),(r4) CREATE (r3)-[:RECOMMENDS]->(r4);
+
+a. List the names of authors who wrote “Comics”.
+MATCH (a:Author)-[:WROTE]->(b:Book {category:'Comics'})
+RETURN DISTINCT a.name AS Comic_Authors;
+
+b. Count no. of readers of _____ book published by “Sage”.
+MATCH (p:Publisher {name:'Sage'})-[:PUBLISHED]->(b:Book {title:'Spiderman'})
+MATCH (r:Reader)-[:READ]->(b)
+RETURN COUNT(r) AS Total_Readers;
+
+c. List all publishers whose name starts with “N”.
+MATCH (p:Publisher)
+WHERE p.name STARTS WITH 'N'
+RETURN p.name AS Publishers;
+
+d. List the names of people who have given rating >=3 for _____ book.
+MATCH (r:Reader)-[rt:RATED]->(b:Book {title:'Spiderman'})
+WHERE rt.stars >= 3
+RETURN r.name AS Readers_With_High_Rating;

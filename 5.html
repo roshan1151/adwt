@@ -62,3 +62,62 @@
 </body>
 
 </html>
+
+
+
+2. Collections + Insert 5 Documents Each
+
+db.projects.insertMany([
+ { _id: "P1", name: "ERP System", project_type: "Software", duration_months: 6 },
+ { _id: "P2", name: "Mobile App", project_type: "Software", duration_months: 4 },
+ { _id: "P3", name: "Bridge Construction", project_type: "Civil", duration_months: 12 },
+ { _id: "P4", name: "Office Renovation", project_type: "Interior", duration_months: 2 },
+ { _id: "P5", name: "Website Redesign", project_type: "Software", duration_months: 1 }
+]);
+
+db.employees.insertMany([
+ { _id: "E1", name: "Mr. Patil", designation: "Developer" },
+ { _id: "E2", name: "Neha Joshi", designation: "Engineer" },
+ { _id: "E3", name: "Rohan Kulkarni", designation: "Designer" },
+ { _id: "E4", name: "Amit Shah", designation: "Manager" },
+ { _id: "E5", name: "Sneha Gawande", designation: "Architect" }
+]);
+
+db.employee_project.insertMany([
+ { employee_id: "E1", project_id: "P1" },
+ { employee_id: "E1", project_id: "P2" },
+ { employee_id: "E2", project_id: "P1" },
+ { employee_id: "E3", project_id: "P3" },
+ { employee_id: "E4", project_id: "P1" },
+ { employee_id: "E4", project_id: "P4" },
+ { employee_id: "E5", project_id: "P2" },
+ { employee_id: "E5", project_id: "P5" },
+ { employee_id: "E1", project_id: "P5" },
+ { employee_id: "E3", project_id: "P2" }
+]);
+
+a. List all names of projects where project_type = "Software"
+db.projects.find(
+  { project_type: "Software" },
+  { name: 1, _id: 0 }
+);
+
+b. List all projects with duration greater than 3 months
+db.projects.find(
+  { duration_months: { $gt: 3 } },
+  { name: 1, duration_months: 1, _id: 0 }
+);
+
+c. Count number of employees working on a specific project (e.g., P1)
+db.employee_project.countDocuments({ project_id: "P1" });
+
+d. List names of projects on which Mr. Patil is working
+var emp = db.employees.findOne({ name: "Mr. Patil" });
+
+var projMap = db.employee_project.find({ employee_id: emp._id }).toArray();
+var projIds = projMap.map(p => p.project_id);
+
+db.projects.find(
+  { _id: { $in: projIds } },
+  { name: 1, _id: 0 }
+);

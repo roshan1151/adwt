@@ -126,3 +126,83 @@
 </body>
 
 </html>
+
+
+2. Create Nodes & Relationships (Sample Data)
+Create Departments
+CREATE (:Department {dept_id:1, name:"Physics"});
+CREATE (:Department {dept_id:2, name:"Geography"});
+CREATE (:Department {dept_id:3, name:"Computer"});
+CREATE (:Department {dept_id:4, name:"Mathematics"});
+
+Create Courses
+CREATE (:Course {course_id:101, name:"Quantum Mechanics", duration:12});
+CREATE (:Course {course_id:102, name:"GIS Mapping", duration:10});
+CREATE (:Course {course_id:103, name:"Data Structures", duration:14});
+CREATE (:Course {course_id:104, name:"Linear Algebra", duration:8});
+CREATE (:Course {course_id:105, name:"Python Programming", duration:6});
+
+Create Persons
+CREATE (:Person {person_id:201, name:"Rohan"});
+CREATE (:Person {person_id:202, name:"Megha"});
+CREATE (:Person {person_id:203, name:"Sana"});
+CREATE (:Person {person_id:204, name:"Amit"});
+
+Create Department–Course Relationships
+// Physics Department Courses
+MATCH (d:Department {name:"Physics"}), (c:Course {name:"Quantum Mechanics"})
+CREATE (d)-[:CONDUCTS]->(c);
+
+// Geography Courses
+MATCH (d:Department {name:"Geography"}), (c:Course {name:"GIS Mapping"})
+CREATE (d)-[:CONDUCTS]->(c);
+
+// Computer Department Courses
+MATCH (d:Department {name:"Computer"}), (c:Course {name:"Data Structures"})
+CREATE (d)-[:CONDUCTS]->(c);
+
+MATCH (d:Department {name:"Computer"}), (c:Course {name:"Python Programming"})
+CREATE (d)-[:CONDUCTS]->(c);
+
+// Mathematics Courses
+MATCH (d:Department {name:"Mathematics"}), (c:Course {name:"Linear Algebra"})
+CREATE (d)-[:CONDUCTS]->(c);
+
+// Common Course for Mathematics & Computer
+MATCH (d1:Department {name:"Mathematics"}), (d2:Department {name:"Computer"}), 
+      (c:Course {name:"Linear Algebra"})
+CREATE (d2)-[:CONDUCTS]->(c);
+
+Create Recommendation Relationships
+MATCH (p:Person {name:"Rohan"}), (c:Course {name:"GIS Mapping"})
+CREATE (p)-[:RECOMMENDS {rating:5}]->(c);
+
+MATCH (p:Person {name:"Megha"}), (c:Course {name:"GIS Mapping"})
+CREATE (p)-[:RECOMMENDS {rating:4}]->(c);
+
+MATCH (p:Person {name:"Amit"}), (c:Course {name:"Quantum Mechanics"})
+CREATE (p)-[:RECOMMENDS {rating:5}]->(c);
+
+MATCH (p:Person {name:"Sana"}), (c:Course {name:"Data Structures"})
+CREATE (p)-[:RECOMMENDS {rating:3}]->(c);
+
+a. List the details of all the departments in the university
+MATCH (d:Department)
+RETURN d;
+
+b. List the names of the courses provided by Physics department
+MATCH (d:Department {name:"Physics"})-[:CONDUCTS]->(c:Course)
+RETURN c.name;
+
+c. List the most recommended course in Geography department
+MATCH (d:Department {name:"Geography"})-[:CONDUCTS]->(c:Course)
+MATCH (p:Person)-[r:RECOMMENDS]->(c)
+WITH c, COUNT(r) AS recCount
+RETURN c.name AS Course, recCount
+ORDER BY recCount DESC
+LIMIT 1;
+
+d. List the names of common courses across Mathematics and Computer department
+MATCH (c:Course)<-[:CONDUCTS]-(d1:Department {name:"Mathematics"}),
+      (c)<-[:CONDUCTS]-(d2:Department {name:"Computer"})
+RETURN c.name AS Common_Course;

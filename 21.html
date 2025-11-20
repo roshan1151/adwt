@@ -113,3 +113,64 @@
 
 </body>
 </html>
+
+
+2. Create Nodes & Relationships (Sample Cypher Data)
+Create Brands
+CREATE (:Brand {brand_id:1, name:"Cipla"})
+CREATE (:Brand {brand_id:2, name:"SunPharma"})
+CREATE (:Brand {brand_id:3, name:"Dr Reddy"});
+
+Create Medicines
+CREATE (:Medicine {med_id:101, name:"Ciplate", type:"Tablet"})
+CREATE (:Medicine {med_id:102, name:"SunCool", type:"Syrup"})
+CREATE (:Medicine {med_id:103, name:"RedPow", type:"Powder"})
+CREATE (:Medicine {med_id:104, name:"HealFast", type:"Tablet"})
+CREATE (:Medicine {med_id:105, name:"CipPow", type:"Powder"});
+
+Create States
+CREATE (:State {state_id:201, name:"Rajasthan", region:"North"})
+CREATE (:State {state_id:202, name:"Gujarat", region:"West"})
+CREATE (:State {state_id:203, name:"Maharashtra", region:"West"});
+
+Create Manufacturing Relationships
+MATCH (b:Brand {name:"Cipla"}), (m:Medicine {name:"Ciplate"})
+CREATE (b)-[:MANUFACTURES]->(m);
+MATCH (b:Brand {name:"SunPharma"}), (m:Medicine {name:"SunCool"})
+CREATE (b)-[:MANUFACTURES]->(m);
+MATCH (b:Brand {name:"Dr Reddy"}), (m:Medicine {name:"RedPow"})
+CREATE (b)-[:MANUFACTURES]->(m);
+MATCH (b:Brand {name:"Cipla"}), (m:Medicine {name:"CipPow"})
+CREATE (b)-[:MANUFACTURES]->(m);
+
+Create Usage Relationships
+
+Rajasthan Usage
+MATCH (m:Medicine {name:"Ciplate"}), (s:State {name:"Rajasthan"})
+CREATE (m)-[:USED_IN {percent:92, category:"High"}]->(s);
+MATCH (m:Medicine {name:"RedPow"}), (s:State {name:"Rajasthan"})
+CREATE (m)-[:USED_IN {percent:40, category:"Low"}]->(s);
+
+Gujarat Usage
+MATCH (m:Medicine {name:"HealFast"}), (s:State {name:"Gujarat"})
+CREATE (m)-[:USED_IN {percent:95, category:"High"}]->(s);
+MATCH (m:Medicine {name:"Ciplate"}), (s:State {name:"Gujarat"})
+CREATE (m)-[:USED_IN {percent:55, category:"Medium"}]->(s);
+
+a. List the names of different medicines considered in your graph
+MATCH (m:Medicine)
+RETURN m.name AS Medicine_Name;
+
+b. List the medicines that are highly used in Rajasthan
+MATCH (m:Medicine)-[u:USED_IN]->(s:State {name:"Rajasthan"})
+WHERE u.category = "High"
+RETURN m.name AS Highly_Used_Medicine, u.percent AS Usage_Percent;
+
+c. List the highly used tablet in Gujarat
+MATCH (m:Medicine {type:"Tablet"})-[u:USED_IN]->(s:State {name:"Gujarat"})
+WHERE u.category = "High"
+RETURN m.name AS Tablet_Name, u.percent AS Usage_Percent;
+
+d. List the medicine names manufacturing “Powder”
+MATCH (b:Brand)-[:MANUFACTURES]->(m:Medicine {type:"Powder"})
+RETURN m.name AS Powder_Medicine, b.name AS Brand;

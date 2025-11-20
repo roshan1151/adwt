@@ -31,3 +31,85 @@
 </body>
 
 </html>
+
+
+2. Create Nodes & Relationships (Sample Data)
+CREATE
+(i1:Industry {ind_id:'I1', name:'Zomato', service_area:'Nashik'}),
+(i2:Industry {ind_id:'I2', name:'Swiggy', service_area:'Pune'});
+
+CREATE
+(r1:Restaurant {rest_id:'R1', name:'Burger King', area:'Nashik', rating:4.5}),
+(r2:Restaurant {rest_id:'R2', name:'Hotel Silver Inn', area:'Pune', rating:3.9}),
+(r3:Restaurant {rest_id:'R3', name:'Dominos', area:'Nashik', rating:4.2}),
+(r4:Restaurant {rest_id:'R4', name:'Madras Cafe', area:'Mumbai', rating:4.8}),
+(r5:Restaurant {rest_id:'R5', name:'Tandoori Darbar', area:'Pune', rating:3.5});
+
+CREATE
+(c1:Customer {cust_id:'C1', name:'Sagar', address:'Nashik'}),
+(c2:Customer {cust_id:'C2', name:'Sneha', address:'Pune'}),
+(c3:Customer {cust_id:'C3', name:'Amit', address:'Mumbai'}),
+(c4:Customer {cust_id:'C4', name:'Sandesh', address:'Nashik'}),
+(c5:Customer {cust_id:'C5', name:'Rohit', address:'Pune'});
+
+CREATE
+(o1:Order {order_id:'O1', order_date:'1/1/2023', amount:500}),
+(o2:Order {order_id:'O2', order_date:'1/1/2023', amount:300}),
+(o3:Order {order_id:'O3', order_date:'5/1/2023', amount:450}),
+(o4:Order {order_id:'O4', order_date:'1/1/2023', amount:700});
+
+Create Relationships
+Customer → Order------------------
+MATCH (c1:Customer {cust_id:'C1'}),(o1:Order {order_id:'O1'})
+CREATE (c1)-[:PLACED_ORDER]->(o1);
+
+MATCH (c2),(o2)
+CREATE (c2)-[:PLACED_ORDER]->(o2);
+
+MATCH (c3),(o3)
+CREATE (c3)-[:PLACED_ORDER]->(o3);
+
+MATCH (c4),(o4)
+CREATE (c4)-[:PLACED_ORDER]->(o4);
+
+Order → Industry
+MATCH (o1),(i2) CREATE (o1)-[:ORDERED_FROM]->(i2);   // Swiggy
+MATCH (o2),(i2) CREATE (o2)-[:ORDERED_FROM]->(i2);   // Swiggy
+MATCH (o3),(i1) CREATE (o3)-[:ORDERED_FROM]->(i1);   // Zomato
+MATCH (o4),(i1) CREATE (o4)-[:ORDERED_FROM]->(i1);   // Zomato
+
+Order → Restaurant
+MATCH (o1),(r1) CREATE (o1)-[:CONTAINS_FOOD_FROM]->(r1);
+MATCH (o2),(r3) CREATE (o2)-[:CONTAINS_FOOD_FROM]->(r3);
+MATCH (o3),(r4) CREATE (o3)-[:CONTAINS_FOOD_FROM]->(r4);
+MATCH (o4),(r1) CREATE (o4)-[:CONTAINS_FOOD_FROM]->(r1);
+
+Ratings
+MATCH (c1),(i1) CREATE (c1)-[:RATED {stars:5}]->(i1);
+MATCH (c2),(i2) CREATE (c2)-[:RATED {stars:4}]->(i2);
+MATCH (c4),(i1) CREATE (c4)-[:RATED {stars:5}]->(i1);
+
+Recommendations
+MATCH (c1),(c2) CREATE (c1)-[:RECOMMENDS]->(c2);
+MATCH (c4),(c1) CREATE (c4)-[:RECOMMENDS]->(c1);
+
+
+a. Count number of customers who placed order on “1/1/2023”
+MATCH (c:Customer)-[:PLACED_ORDER]->(o:Order {order_date:'1/1/2023'})
+RETURN COUNT(c) AS Total_Customers;
+
+b. List customers whose name starts with 'S' and ordered using Swiggy
+MATCH (c:Customer)-[:PLACED_ORDER]->(o:Order)-[:ORDERED_FROM]->(i:Industry {name:'Swiggy'})
+WHERE c.name STARTS WITH 'S'
+RETURN c.name AS Customer;
+
+c. List the hotels with high rating (>=4)
+MATCH (r:Restaurant)
+WHERE r.rating >= 4
+RETURN r.name AS High_Rated_Hotels, r.rating;
+
+d. List the most recommended hotels in ______ area
+
+MATCH (c:Customer)-[:PLACED_ORDER]->(o:Order)-[:CONTAINS_FOOD_FROM]->(r:Restaurant {area:'Nashik'})
+RETURN r.name AS Hotel, COUNT(c) AS Recommendations
+ORDER BY Recommendations DESC LIMIT 1;

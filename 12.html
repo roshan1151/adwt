@@ -89,3 +89,81 @@
 </body>
 
 </html>
+
+
+2. Insert At Least 5 Documents in Each Collection
+db.actors.insertMany([
+ { _id: "A1", name: "Akshay Kumar", age: 55 },
+ { _id: "A2", name: "Salman Khan", age: 58 },
+ { _id: "A3", name: "Katrina Kaif", age: 40 },
+ { _id: "A4", name: "Ajay Devgn", age: 54 },
+ { _id: "A5", name: "Ranveer Singh", age: 38 }
+]);
+
+db.producers.insertMany([
+ { _id: "P1", name: "Karan Johar", company: "Dharma Productions" },
+ { _id: "P2", name: "Sajid Nadiadwala", company: "NGE" },
+ { _id: "P3", name: "Aditya Chopra", company: "YRF" },
+ { _id: "P4", name: "Rohit Shetty", company: "RS Pictures" },
+ { _id: "P5", name: "Bhushan Kumar", company: "T-Series" }
+]);
+
+db.movies.insertMany([
+{
+  _id: "M1",
+  title: "Sooryavanshi",
+  year: 2021,
+  budget: 100,
+  actors: ["A1", "A3", "A4"],
+  producers: ["P4", "P5"]
+},
+{
+  _id: "M2",
+  title: "Bharat",
+  year: 2019,
+  budget: 120,
+  actors: ["A2", "A3"],
+  producers: ["P2"]
+},
+{
+  _id: "M3",
+  title: "Kesari",
+  year: 2019,
+  budget: 80,
+  actors: ["A1"],
+  producers: ["P5"]
+},
+{
+  _id: "M4",
+  title: "Simmba",
+  year: 2018,
+  budget: 90,
+  actors: ["A5", "A3"],
+  producers: ["P4", "P1"]
+},
+{
+  _id: "M5",
+  title: "Gabbar is Back",
+  year: 2015,
+  budget: 70,
+  actors: ["A1"],
+  producers: ["P2", "P5"]
+}
+]);
+
+
+a. List the names of movies with the highest budget
+var maxBudget = db.movies.find().sort({ budget: -1 }).limit(1).toArray()[0].budget;
+
+db.movies.find(
+   { budget: maxBudget },
+   { title: 1, _id: 0 }
+);
+
+
+
+d. List the names of movies produced by more than one producer
+db.movies.find(
+   { $expr: { $gt: [ { $size: "$producers" }, 1 ] } },
+   { title: 1, producers: 1, _id: 0 }
+);

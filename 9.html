@@ -90,3 +90,58 @@
 </body>
 
 </html>
+
+2. Collections With 10 Documents Each
+db.customers.insertMany([
+ { _id: "C1", name: "Dinesh Patil", address: "Nashik", mobile: "9990011111" },
+ { _id: "C2", name: "Deepak Shah", address: "Pimpri", mobile: "8880022222" },
+ { _id: "C3", name: "Amit Kulkarni", address: "Pune", mobile: "7770033333" },
+ { _id: "C4", name: "Darshan Joshi", address: "Pimpri", mobile: "9990044444" },
+ { _id: "C5", name: "Mr. Patil", address: "Nashik Road", mobile: "8880055555" },
+ { _id: "C6", name: "Rohan Deshmukh", address: "Mumbai", mobile: "7770066666" },
+ { _id: "C7", name: "Diksha Gawande", address: "Pimpri", mobile: "9990077777" },
+ { _id: "C8", name: "Sneha Jain", address: "Thane", mobile: "8880088888" },
+ { _id: "C9", name: "Dhananjay Jagtap", address: "Pune", mobile: "7770099999" },
+ { _id: "C10",name: "Pooja Shinde", address: "Pimpri", mobile: "6660011111" }
+]);
+
+db.loans.insertMany([
+ { loan_id: "L1",  customer_id: "C1", loan_type: "Home",     loan_amt: 500000,  city: "Nashik" },
+ { loan_id: "L2",  customer_id: "C2", loan_type: "Car",      loan_amt: 300000,  city: "Pimpri" },
+ { loan_id: "L3",  customer_id: "C3", loan_type: "Education",loan_amt: 150000,  city: "Pune" },
+ { loan_id: "L4",  customer_id: "C4", loan_type: "Home",     loan_amt: 800000,  city: "Pimpri" },
+ { loan_id: "L5",  customer_id: "C5", loan_type: "Personal", loan_amt: 120000,  city: "Nashik" },
+ { loan_id: "L6",  customer_id: "C6", loan_type: "Business", loan_amt: 250000,  city: "Mumbai" },
+ { loan_id: "L7",  customer_id: "C7", loan_type: "Car",      loan_amt: 400000,  city: "Pimpri" },
+ { loan_id: "L8",  customer_id: "C8", loan_type: "Home",     loan_amt: 900000,  city: "Thane" },
+ { loan_id: "L9",  customer_id: "C9", loan_type: "Personal", loan_amt: 200000,  city: "Pune" },
+ { loan_id: "L10", customer_id: "C10",loan_type: "Gold",     loan_amt: 180000,  city: "Pimpri" }
+]);
+
+a. List all customers whose name starts with 'D'
+db.customers.find(
+   { name: /^D/ },
+   { name: 1, _id: 0 }
+);
+
+b. List customer names (descending) who have taken a loan from Pimpri city
+var loanList = db.loans.find({ city: "Pimpri" }).toArray();
+var custIds = loanList.map(l => l.customer_id);
+
+db.customers.find(
+   { _id: { $in: custIds } },
+   { name: 1, _id: 0 }
+).sort({ name: -1 });
+
+c. Display customer details having maximum loan amount
+var maxLoan = db.loans.find().sort({ loan_amt: -1 }).limit(1).toArray()[0];
+
+db.customers.findOne({ _id: maxLoan.customer_id });
+
+d. Update address of the customer whose name is “Mr. Patil” and loan_amt > 100000
+var loan = db.loans.findOne({ loan_amt: { $gt: 100000 }, customer_id: "C5" });
+
+db.customers.updateOne(
+   { name: "Mr. Patil" },
+   { $set: { address: "Updated Address, Nashik" } }
+);

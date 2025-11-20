@@ -104,3 +104,116 @@
 </body>
 
 </html>
+
+
+2. Insert At Least 10 Documents in Each Collection
+db.students.insertMany([
+ { _id: "S1", name: "Amit Deshmukh", class: "FY" },
+ { _id: "S2", name: "Riya Patil", class: "SY" },
+ { _id: "S3", name: "Kunal Shinde", class: "FY" },
+ { _id: "S4", name: "Snehal Joshi", class: "TY" },
+ { _id: "S5", name: "Priya Shah", class: "FY" },
+ { _id: "S6", name: "Rohit Pawar", class: "SY" },
+ { _id: "S7", name: "Tanvi Vaidya", class: "TY" },
+ { _id: "S8", name: "Ajinkya More", class: "FY" },
+ { _id: "S9", name: "Meera Kulkarni", class: "SY" },
+ { _id: "S10", name: "Vikas Patange", class: "TY" }
+]);
+
+db.competitions.insertMany([
+{
+ _id: "C1",
+ name: "Programming",
+ participants: ["S1","S3","S4","S6","S9"],
+ winners: ["S3","S4","S1"]
+},
+{
+ _id: "C2",
+ name: "E-Rangoli",
+ participants: ["S1","S2","S5","S7","S8","S10"],
+ winners: ["S5","S7","S1"]
+},
+{
+ _id: "C3",
+ name: "Quiz",
+ participants: ["S2","S3","S4","S5"],
+ winners: ["S4","S5","S3"]
+},
+{
+ _id: "C4",
+ name: "Debate",
+ participants: ["S2","S6","S8","S9"],
+ winners: ["S6","S2","S9"]
+},
+{
+ _id: "C5",
+ name: "Poster Making",
+ participants: ["S1","S3","S5","S7"],
+ winners: ["S7","S5","S3"]
+},
+{
+ _id: "C6",
+ name: "Photography",
+ participants: ["S3","S5","S6","S8"],
+ winners: ["S8","S6","S5"]
+},
+{
+ _id: "C7",
+ name: "Dance",
+ participants: ["S4","S5","S7","S9","S10"],
+ winners: ["S10","S7","S5"]
+},
+{
+ _id: "C8",
+ name: "Singing",
+ participants: ["S2","S3","S6","S9"],
+ winners: ["S9","S3","S2"]
+},
+{
+ _id: "C9",
+ name: "Drama",
+ participants: ["S4","S7","S8","S10"],
+ winners: ["S7","S10","S8"]
+},
+{
+ _id: "C10",
+ name: "Coding Sprint",
+ participants: ["S1","S3","S5","S6","S9","S10"],
+ winners: ["S6","S3","S5"]
+}
+]);
+
+
+a. Display average number of students participating in each competition
+db.competitions.aggregate([
+  {
+    $project: {
+      name: 1,
+      avgStudents: { $size: "$participants" }
+    }
+  }
+]);
+
+b. Find the number of students in Programming competition
+db.competitions.aggregate([
+  { $match: { name: "Programming" } },
+  { $project: { count: { $size: "$participants" } } }
+]);
+
+c. Display names of first 3 winners of each competition
+db.competitions.aggregate([
+  {
+    $lookup: {
+      from: "students",
+      localField: "winners",
+      foreignField: "_id",
+      as: "winnerDetails"
+    }
+  },
+  {
+    $project: {
+      name: 1,
+      "winnerDetails.name": 1
+    }
+  }
+]);
